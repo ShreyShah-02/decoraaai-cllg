@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecoraAI — Database Explorer & Admin Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            background: #030712;
+            color: #f1f5f9;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-layout {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+
+        .admin-sidebar {
+            width: 280px;
+            background: #0b1120;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+        }
+
+        .table-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .table-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #cbd5e1;
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: left;
+            width: 100%;
+        }
+
+        .table-item:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .table-item.active {
+            background: rgba(99, 102, 241, 0.18);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #818cf8;
+            font-weight: 600;
+        }
+
+        .row-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #94a3b8;
+        }
+
+        .table-item.active .row-badge {
+            background: #6366f1;
+            color: white;
+        }
+
+        .admin-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #030712;
+        }
+
+        .admin-topbar {
+            padding: 16px 28px;
+            background: #0f172a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .admin-content {
+            flex: 1;
+            overflow: auto;
+            padding: 24px 28px;
+        }
+
+        .data-table-container {
+            background: #0b1120;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-controls {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 8px 14px;
+            gap: 10px;
+            width: 300px;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+
+        .db-grid {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .db-grid th {
+            background: #111827;
+            padding: 12px 16px;
+            text-align: left;
+            color: #94a3b8;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+
+        .db-grid td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+            max-width: 320px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .db-grid tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .sql-editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sql-textarea {
+            width: 100%;
+            height: 140px;
+            background: #0b1120;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 16px;
+            color: #818cf8;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+        }
+
+        .json-preview {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            color: #a5b4fc;
+            font-family: monospace;
+            font-size: 11px;
+            max-height: 200px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar" style="height:70px; padding:0 30px;">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-database" style="color:white; font-size:18px;"></i></div>
+            <h2>Decora<span>AI</span> <span style="font-size:14px; font-weight:400; color:#94a3b8; margin-left:8px;">Database Explorer</span></h2>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <a href="/admin/db/download" class="btn-secondary" style="text-decoration:none; display:flex; align-items:center; gap:6px;">
+                <i class="fas fa-download"></i> Download .db File
+            </a>
+            <a href="/" class="btn-secondary" style="text-decoration:none;">&larr; Return to App</a>
+        </div>
+    </nav>
+
+    <!-- ADMIN WORKSPACE -->
+    <div class="admin-layout">
+        <!-- SIDEBAR: TABLE LIST -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title"><i class="fas fa-table"></i> Database Tables</span>
+                <span id="total-tables-count" class="row-badge">0</span>
+            </div>
+            <div id="tables-list" class="table-list">
+                <div style="padding:20px; color:#64748b; font-size:12px; text-align:center;">Loading tables...</div>
+            </div>
+        </div>
+
+        <!-- MAIN VIEW -->
+        <div class="admin-main">
+            <div class="admin-topbar">
+                <div class="admin-tabs">
+                    <button id="tab-data-btn" class="tab-btn active" onclick="switchView('data')">
+                        <i class="fas fa-table-cells"></i> Data Explorer
+                    </button>
+                    <button id="tab-sql-btn" class="tab-btn" onclick="switchView('sql')">
+                        <i class="fas fa-terminal"></i> SQL Query Runner
+                    </button>
+                    <button id="tab-guide-btn" class="tab-btn" onclick="switchView('guide')">
+                        <i class="fas fa-book-open"></i> DB Connection Guide
+                    </button>
+                </div>
+                <div id="active-table-title" style="font-size:14px; font-weight:600; color:#cbd5e1;"></div>
+            </div>
+
+            <div class="admin-content">
+                <!-- VIEW 1: DATA EXPLORER -->
+                <div id="view-data">
+                    <div class="data-table-container">
+                        <div class="table-controls">
+                            <div class="search-box">
+                                <i class="fas fa-search" style="color:#64748b;"></i>
+                                <input type="text" id="filter-input" placeholder="Search table rows..." oninput="filterTableRows()">
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button class="btn-secondary" onclick="refreshActiveTable()"><i class="fas fa-rotate"></i> Refresh</button>
+                                <button class="btn-secondary" onclick="exportTableJson()"><i class="fas fa-file-code"></i> Export JSON</button>
+                            </div>
+                        </div>
+
+                        <div style="overflow-x:auto;">
+                            <table class="db-grid" id="data-grid">
+                                <thead>
+                                    <tr id="grid-header"><th>Select a table from the sidebar</th></tr>
+                                </thead>
+                                <tbody id="grid-body">
+                                    <tr><td style="text-align:center; padding:40px; color:#64748b;">No table selected</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: SQL RUNNER -->
+                <div id="view-sql" style="display:none;">
+                    <div class="sql-editor-container">
+                        <div class="glass-card">
+                            <h4><i class="fas fa-code" style="color:#818cf8;"></i> Execute SQL Query</h4>
+                            <textarea id="sql-query-input" class="sql-textarea" placeholder="SELECT * FROM users LIMIT 10;">SELECT * FROM house_projects LIMIT 10;</textarea>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+                                <span style="font-size:12px; color:#64748b;">Supports SELECT queries on all database tables.</span>
+                                <button class="btn-accent" onclick="runCustomSql()"><i class="fas fa-play"></i> Run Query</button>
+                            </div>
+                        </div>
+
+                        <div class="data-table-container" id="sql-result-container" style="display:none;">
+                            <div class="table-controls">
+                                <span id="sql-result-count" style="font-size:13px; font-weight:600; color:#34d399;">0 rows returned</span>
+                            </div>
+                            <div style="overflow-x:auto;">
+                                <table class="db-grid" id="sql-grid">
+                                    <thead id="sql-grid-header"></thead>
+                                    <tbody id="sql-grid-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: DB CONNECTION GUIDE -->
+                <div id="view-guide" style="display:none;">
+                    <div class="studio-grid-2">
+                        <div class="glass-card">
+                            <h4><i class="fas fa-folder" style="color:#60a5fa;"></i> Local SQLite Database File</h4>
+                            <p style="font-size:13px; color:#94a3b8; line-height:1.7; margin-bottom:16px;">
+                                DecoraAI stores all data locally in an SQLite database file at the root of the project:
+                            </p>
+                            <div class="json-preview" style="font-size:13px; color:#86efac; margin-bottom:16px;">
+                                interior_design.db
+                            </div>
+                            <a href="/admin/db/download" class="btn-accent" style="text-decoration:none; display:inline-block;">
+                                <i class="fas fa-download"></i> Download interior_design.db
+                            </a>
+                        </div>
+
+                        <div class="glass-card">
+                            <h4><i class="fas fa-tools" style="color:#a78bfa;"></i> Recommended External GUI Viewers</h4>
+                            <div style="font-size:13px; color:#cbd5e1; line-height:1.8;">
+                                <p><strong>1. DB Browser for SQLite</strong> (Free Desktop App)<br>
+                                <span style="font-size:12px; color:#94a3b8;">Download from <a href="https://sqlitebrowser.org/" target="_blank" style="color:#60a5fa;">sqlitebrowser.org</a> and open <code>interior_design.db</code>.</span></p>
+
+                                <p style="margin-top:12px;"><strong>2. VS Code Extension</strong><br>
+                                <span style="font-size:12px; color:#94a3b8;">Install "SQLite Viewer" or "SQLite" extension in VS Code. Right click <code>interior_design.db</code> &rarr; Open With &rarr; SQLite Viewer.</span></p>
+
+                                <p style="margin-top:12px;"><strong>3. DBeaver / TablePlus</strong><br>
+                                <span style="font-size:12px; color:#94a3b8;">Universal database managers supporting SQLite files directly.</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAIL INSPECT MODAL -->
+    <div id="row-modal" class="dialog-modal">
+        <div class="dialog-card" style="max-width:650px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h4 style="font-size:16px; color:white;"><i class="fas fa-file-lines"></i> Record Details</h4>
+                <button class="close-btn" onclick="closeRowModal()">&times;</button>
+            </div>
+            <div id="row-modal-content" class="json-preview" style="max-height:400px; font-size:12px; color:#e2e8f0;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+                <button id="modal-delete-btn" class="btn-secondary" style="color:#f87171; border-color:rgba(239,68,68,0.4);" onclick="deleteInspectedRecord()"><i class="fas fa-trash-can"></i> Delete Record</button>
+                <button class="btn-secondary" onclick="closeRowModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTable = null;
+        let currentTableData = [];
+        let currentInspectIndex = null;
+
+        window.addEventListener("DOMContentLoaded", () => {
+            loadTablesList();
+        });
+
+        function switchView(view) {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            document.getElementById("view-data").style.display = view === 'data' ? 'block' : 'none';
+            document.getElementById("view-sql").style.display = view === 'sql' ? 'block' : 'none';
+            document.getElementById("view-guide").style.display = view === 'guide' ? 'block' : 'none';
+
+            if (view === 'data') document.getElementById("tab-data-btn").classList.add("active");
+            if (view === 'sql') document.getElementById("tab-sql-btn").classList.add("active");
+            if (view === 'guide') document.getElementById("tab-guide-btn").classList.add("active");
+        }
+
+        async function loadTablesList() {
+            try {
+                const res = await fetch("/api/admin/db/tables");
+                const data = await res.json();
+                const container = document.getElementById("tables-list");
+                container.innerHTML = "";
+                document.getElementById("total-tables-count").innerText = data.tables.length;
+
+                data.tables.forEach((t, idx) => {
+                    const btn = document.createElement("button");
+                    btn.className = `table-item ${currentTable === t.name || (!currentTable && idx === 0) ? 'active' : ''}`;
+                    btn.innerHTML = `
+                        <span><i class="fas fa-table" style="margin-right:6px; opacity:0.7;"></i> ${t.name}</span>
+                        <span class="row-badge">${t.row_count}</span>
+                    `;
+                    btn.onclick = () => selectDbTable(t.name, btn);
+                    container.appendChild(btn);
+                });
+
+                if (!currentTable && data.tables.length > 0) {
+                    selectDbTable(data.tables[0].name);
+                }
+            } catch (e) {
+                console.error("Failed to load tables:", e);
+            }
+        }
+
+        async function selectDbTable(tableName, btnElement) {
+            currentTable = tableName;
+            document.querySelectorAll(".table-item").forEach(b => b.classList.remove("active"));
+            if (btnElement) btnElement.classList.add("active");
+            document.getElementById("active-table-title").innerText = `Table: ${tableName}`;
+
+            await refreshActiveTable();
+        }
+
+        async function refreshActiveTable() {
+            if (!currentTable) return;
+            try {
+                const res = await fetch(`/api/admin/db/table/${currentTable}`);
+                const data = await res.json();
+                currentTableData = data.rows || [];
+                renderGrid(data.columns, data.rows);
+            } catch (e) {
+                console.error("Failed to fetch table data:", e);
+            }
+        }
+
+        function renderGrid(columns, rows) {
+            const thead = document.getElementById("grid-header");
+            const tbody = document.getElementById("grid-body");
+
+            thead.innerHTML = columns.map(c => `<th>${c}</th>`).join("") + `<th>Actions</th>`;
+
+            if (rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${columns.length + 1}" style="text-align:center; padding:30px; color:#64748b;">No records found in this table.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = rows.map((r, i) => {
+                const cells = columns.map(c => {
+                    const val = r[c];
+                    const displayVal = typeof val === 'object' ? JSON.stringify(val) : String(val ?? 'NULL');
+                    return `<td>${escapeHtml(displayVal)}</td>`;
+                }).join("");
+
+                const recordId = r.id;
+                let deleteBtn = "";
+                if (recordId !== undefined && recordId !== null) {
+                    const label = currentTable === 'users' ? 'Delete User' : 'Delete';
+                    deleteBtn = `<button class="btn-secondary" style="padding:4px 8px; font-size:11px; color:#f87171; border-color:rgba(239,68,68,0.3); margin-left:6px;" onclick="deleteRecord('${currentTable}', '${recordId}', ${i})" title="Delete Record"><i class="fas fa-trash-can"></i> ${label}</button>`;
+                }
+
+                return `<tr>${cells}<td style="white-space:nowrap;"><button class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="inspectRow(${i})"><i class="fas fa-eye"></i> View</button>${deleteBtn}</td></tr>`;
+            }).join("");
+        }
+
+        function inspectRow(index) {
+            currentInspectIndex = index;
+            const record = currentTableData[index];
+            if (!record) return;
+            document.getElementById("row-modal-content").innerHTML = `<pre>${JSON.stringify(record, null, 2)}</pre>`;
+            const deleteModalBtn = document.getElementById("modal-delete-btn");
+            if (record.id !== undefined && record.id !== null) {
+                deleteModalBtn.style.display = "inline-block";
+                deleteModalBtn.innerHTML = currentTable === 'users' ? '<i class="fas fa-trash-can"></i> Delete User' : '<i class="fas fa-trash-can"></i> Delete Record';
+            } else {
+                deleteModalBtn.style.display = "none";
+            }
+            document.getElementById("row-modal").classList.add("active");
+        }
+
+        function closeRowModal() {
+            currentInspectIndex = null;
+            document.getElementById("row-modal").classList.remove("active");
+        }
+
+        async function deleteInspectedRecord() {
+            if (currentInspectIndex === null || !currentTableData[currentInspectIndex]) return;
+            const record = currentTableData[currentInspectIndex];
+            await deleteRecord(currentTable, record.id, currentInspectIndex);
+        }
+
+        async function deleteRecord(tableName, recordId, index) {
+            const record = currentTableData[index] || {};
+            let confirmMsg = `Are you sure you want to delete record #${recordId} from '${tableName}'?`;
+            if (tableName === 'users') {
+                confirmMsg = `Are you sure you want to delete user "${record.name || record.email || recordId}" (ID: ${recordId})?\n\nThis will remove the user account.`;
+            }
+
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                const endpoint = tableName === 'users' ? `/api/admin/db/user/${recordId}` : `/api/admin/db/table/${tableName}/${recordId}`;
+                const res = await fetch(endpoint, { method: "DELETE" });
+                const data = await res.json();
+
+                if (res.ok && data.status === "success") {
+                    closeRowModal();
+                    alert(`✓ ${data.message || 'Deleted successfully.'}`);
+                    await refreshActiveTable();
+                    await loadTablesList();
+                } else {
+                    alert(`Error: ${data.error || 'Failed to delete record.'}`);
+                }
+            } catch (err) {
+                console.error("Delete error:", err);
+                alert("Network error while deleting record.");
+            }
+        }
+
+        function filterTableRows() {
+            const query = document.getElementById("filter-input").value.toLowerCase();
+            const rows = document.querySelectorAll("#grid-body tr");
+            rows.forEach(r => {
+                const text = r.innerText.toLowerCase();
+                r.style.display = text.includes(query) ? "" : "none";
+            });
+        }
+
+        function exportTableJson() {
+            if (!currentTableData || currentTableData.length === 0) {
+                alert("No data to export.");
+                return;
+            }
+            const blob = new Blob([JSON.stringify(currentTableData, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${currentTable}_export.json`;
+            a.click();
+        }
+
+        async function runCustomSql() {
+            const query = document.getElementById("sql-query-input").value.trim();
+            if (!query) return;
+
+            try {
+                const res = await fetch("/api/admin/db/query", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query })
+                });
+                const data = await res.json();
+                const container = document.getElementById("sql-result-container");
+                const countBadge = document.getElementById("sql-result-count");
+                const thead = document.getElementById("sql-grid-header");
+                const tbody = document.getElementById("sql-grid-body");
+
+                container.style.display = "block";
+
+                if (data.error) {
+                    countBadge.style.color = "#f87171";
+                    countBadge.innerText = `Error: ${data.error}`;
+                    thead.innerHTML = "";
+                    tbody.innerHTML = "";
+                    return;
+                }
+
+                countBadge.style.color = "#34d399";
+                countBadge.innerText = `✓ ${data.rows.length} rows returned in ${data.execution_time_ms}ms`;
+
+                thead.innerHTML = (data.columns || []).map(c => `<th>${c}</th>`).join("");
+                tbody.innerHTML = (data.rows || []).map(r => {
+                    return `<tr>${data.columns.map(c => `<td>${escapeHtml(String(r[c] ?? 'NULL'))}</td>`).join("")}</tr>`;
+                }).join("");
+
+            } catch (e) {
+                alert("Query execution failed.");
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+    </script>
+</body>
+</html>

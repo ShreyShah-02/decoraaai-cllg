@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DecoraAI — AI Interior Design</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/style.css') }}">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+    <nav class="navbar">
+
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-couch" style="color:white; font-size:18px;"></i></div>
+            <h2>Decora<span style="color:#60a5fa;">AI</span></h2>
+        </div>
+
+<ul class="nav-links">
+
+<li><a href="#hero">Home</a></li>
+
+<li><a href="#features">Generate</a></li>
+
+<li><a href="#gallery">Gallery</a></li>
+
+<li><a href="#about">About</a></li>
+
+<li><a href="#contact">Contact</a></li>
+
+</ul>
+
+<div style="display:flex; align-items:center; gap:10px;">
+    <a href="/login" id="nav-login-link" class="btn-secondary" style="text-decoration:none; padding:8px 14px; border-radius:10px; font-size:13px;">
+        <i class="fas fa-user"></i> Sign In
+    </a>
+    <div id="nav-user-profile" style="display:none; align-items:center; gap:8px;">
+        <span id="nav-user-name" style="font-size:13px; color:#cbd5e1; font-weight:500;"></span>
+        <a href="/admin/db" id="nav-admin-db-link" target="_blank" class="btn-secondary" style="display:none; text-decoration:none; color:#a78bfa; font-size:12px; padding:6px 12px;" title="Admin Database Explorer">
+            <i class="fas fa-database"></i> DB
+        </a>
+        <button onclick="handleLogout()" class="btn-secondary" style="padding:6px 12px; font-size:12px;" title="Sign Out">
+            <i class="fas fa-right-from-bracket"></i>
+        </button>
+    </div>
+    <button class="primary-btn">
+        ⚡ Start Designing
+    </button>
+</div>
+
+</nav>
+<section id="hero" class="hero">
+
+<div class="hero-left">
+
+<span class="badge">
+✨ DecoraAI Powered Interior Design
+</span>
+
+<h1>
+
+Transform Your
+<span>Space with AI</span>
+
+</h1>
+
+<p>
+
+Describe your dream room in plain English.
+Generate photorealistic interiors,
+furniture suggestions and moodboards.
+
+</p>
+
+<div class="prompt-box">
+
+<input
+type="text"
+placeholder="Minimalist living room with warm oak shelves">
+
+<button onclick="generateImage()">
+Generate
+</button>
+
+</div>
+
+<div class="result-container">
+
+    <img
+        id="generated-image"
+        width="600">
+
+</div>
+
+<div class="tags">
+
+<span>Japandi Bedroom</span>
+
+<span>Art Déco Lounge</span>
+
+<span>Scandinavian Kitchen</span>
+
+<span>Moody Home Office</span>
+
+</div>
+
+</div>
+
+<div class="hero-right">
+
+<img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
+alt="room">
+
+</div>
+
+</section>
+<section class="stats">
+
+<div class="stat-card">
+
+<h2>47K+</h2>
+
+<p>Rooms Generated</p>
+
+</div>
+
+<div class="stat-card">
+
+<h2>98%</h2>
+
+<p>User Satisfaction</p>
+
+</div>
+
+<div class="stat-card">
+
+<h2>4.2s</h2>
+
+<p>Average Render Time</p>
+
+</div>
+
+<div class="stat-card">
+
+<h2>12K+</h2>
+
+<p>Active Designers</p>
+
+</div>
+
+</section>
+<section id="features">
+
+<div class="section-title">
+
+<span>POWERFUL FEATURES</span>
+
+<h2>
+Everything you need to design brilliantly.
+</h2>
+
+</div>
+
+<div class="feature-grid">
+
+<div class="feature-card">
+
+<i class="fas fa-brain"></i>
+
+<h3>AI Room Generation</h3>
+
+<p>
+Generate photorealistic interiors
+in under 5 seconds.
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fas fa-palette"></i>
+
+<h3>Style Recommendation</h3>
+
+<p>
+Get personalized design styles.
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fas fa-couch"></i>
+
+<h3>Furniture Suggestions</h3>
+
+<p>
+Curated furniture recommendations.
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fas fa-eye"></i>
+
+<h3>Realtime Preview</h3>
+
+<p>
+Watch changes instantly.
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fas fa-download"></i>
+
+<h3>HD Export</h3>
+
+<p>
+Download 4K designs.
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fas fa-wand-magic"></i>
+
+<h3>Style Transfer</h3>
+
+<p>
+Apply styles from references.
+</p>
+
+</div>
+
+</div>
+
+</section>
+<section class="how">
+
+<div class="section-title">
+
+<span>HOW IT WORKS</span>
+
+<h2>
+From prompt to photorealistic space
+</h2>
+
+</div>
+
+<div class="steps">
+
+<div class="step">
+
+<h4>STEP 01</h4>
+
+<h3>Describe Vision</h3>
+
+<p>
+Enter a room prompt.
+</p>
+
+</div>
+
+<div class="step">
+
+<h4>STEP 02</h4>
+
+<h3>AI Renders</h3>
+
+<p>
+Stable Diffusion generates images.
+</p>
+
+</div>
+
+<div class="step">
+
+<h4>STEP 03</h4>
+
+<h3>Refine</h3>
+
+<p>
+Adjust furniture and style.
+</p>
+
+</div>
+
+<div class="step">
+
+<h4>STEP 04</h4>
+
+<h3>Export</h3>
+
+<p>
+Download in HD.
+</p>
+
+</div>
+
+</div>
+
+</section>
+<section id="gallery">
+
+<div class="section-title">
+
+<span>RECENT CREATIONS</span>
+
+<h2>
+Rooms that started as a single sentence.
+</h2>
+
+</div>
+
+<div class="gallery-grid">
+
+<div class="gallery-card">
+
+<img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85">
+
+<h3>Modern Minimalist</h3>
+
+</div>
+
+<div class="gallery-card">
+
+<img src="https://images.unsplash.com/photo-1484154218962-a197022b5858">
+
+<h3>Japandi Bedroom</h3>
+
+</div>
+
+<div class="gallery-card">
+
+<img src="https://images.unsplash.com/photo-1494526585095-c41746248156">
+
+<h3>Penthouse Lounge</h3>
+
+</div>
+
+</div>
+
+</section>
+<section class="testimonials">
+
+<div class="section-title">
+
+<span>TESTIMONIALS</span>
+
+<h2>
+Loved by designers worldwide.
+</h2>
+
+</div>
+
+<div class="testimonial-grid">
+
+<div class="testimonial">
+
+★★★★★
+
+<p>
+Generated a room concept in seconds.
+</p>
+
+<h4>Maren Lindqvist</h4>
+
+</div>
+
+<div class="testimonial">
+
+★★★★★
+
+<p>
+Amazing style consistency.
+</p>
+
+<h4>Daniel Osei</h4>
+
+</div>
+
+<div class="testimonial">
+
+★★★★★
+
+<p>
+Perfect final year project inspiration.
+</p>
+
+<h4>Yuki Tanaka</h4>
+
+</div>
+
+</div>
+
+</section>
+<section id="about">
+
+<div class="section-title">
+
+<span>FINAL YEAR PROJECT</span>
+
+<h2>
+AI Powered Interior Design
+</h2>
+
+</div>
+
+<div class="about-content">
+
+<div class="about-box">
+200K+
+<span>Training Images</span>
+</div>
+
+<div class="about-box">
+94%
+<span>Style Accuracy</span>
+</div>
+
+<div class="about-box">
+4.2s
+<span>Avg Render</span>
+</div>
+
+<div class="about-box">
+A+
+<span>Project Grade</span>
+</div>
+
+</div>
+
+</section><section class="team">
+
+<h2>The Team</h2>
+
+<div class="team-grid">
+
+<div class="member">
+
+<div class="avatar">
+AR
+</div>
+
+<h3>Alex Rivera</h3>
+
+<p>Lead Developer</p>
+
+</div>
+
+<div class="member">
+
+<div class="avatar">
+PN
+</div>
+
+<h3>Priya Nair</h3>
+
+<p>UI/UX Designer</p>
+
+</div>
+
+<div class="member">
+
+<div class="avatar">
+SC
+</div>
+
+<h3>Sam Chen</h3>
+
+<p>Full Stack Engineer</p>
+
+</div>
+
+<div class="member">
+
+<div class="avatar">
+ZA
+</div>
+
+<h3>Zara Ahmed</h3>
+
+<p>ML Engineer</p>
+
+</div>
+
+</div>
+
+</section>
+<section id="contact">
+
+<div class="section-title">
+
+<span>CONTACT</span>
+
+<h2>
+Let's Build Something Amazing
+</h2>
+
+</div>
+
+<form class="contact-form">
+
+<input
+type="text"
+placeholder="Name">
+
+<input
+type="email"
+placeholder="Email">
+
+<textarea
+placeholder="Message">
+</textarea>
+
+<button>
+Send Message
+</button>
+
+</form>
+
+</section>
+<section class="faq">
+
+<h2>
+Frequently Asked Questions
+</h2>
+
+<div class="faq-item">
+
+<button class="faq-btn">
+Is DecoraAI a real product?
+</button>
+
+<div class="faq-content">
+
+Yes, it is a final year project.
+
+</div>
+
+</div>
+
+<div class="faq-item">
+
+<button class="faq-btn">
+How was the model trained?
+</button>
+
+<div class="faq-content">
+
+Using Stable Diffusion fine tuning.
+
+</div>
+
+</div>
+
+</section>
+<footer>
+
+<div class="footer-grid">
+
+<div>
+
+<h4>Product</h4>
+
+<p>Generate Design</p>
+
+<p>Gallery</p>
+
+<p>API Docs</p>
+
+</div>
+
+<div>
+
+<h4>Resources</h4>
+
+<p>Documentation</p>
+
+<p>Support</p>
+
+</div>
+
+<div>
+
+<h4>Legal</h4>
+
+<p>Privacy Policy</p>
+
+<p>Terms</p>
+
+</div>
+
+</div>
+
+</footer>
+
+<!-- ==============================================================================
+     AI HOUSE DESIGN STUDIO MODAL
+     ============================================================================== -->
+<div id="house-studio-modal" class="studio-modal">
+    <div class="studio-container">
+        <!-- Header -->
+        <div class="studio-header">
+            <div class="studio-brand">
+                <div class="logo-icon"><i class="fas fa-couch" style="color:white; font-size:18px;"></i></div>
+                <div>
+                    <h3>DecoraAI Studio</h3>
+                    <p style="font-size:11px; color:#94a3b8; margin-top:2px;">Whole House & Multi-Room Intelligence</p>
+                </div>
+            </div>
+            <div class="project-select-bar">
+                <select id="active-house-select" class="project-select" onchange="onHouseProjectChange()">
+                    <option value="">Loading projects...</option>
+                </select>
+                <button class="btn-secondary" onclick="openCreateHouseDialog()">+ New House</button>
+                <button class="btn-secondary" onclick="deleteActiveHouseProject()" title="Delete active house project" style="color:#f87171; padding:8px 12px;"><i class="fas fa-trash-can"></i></button>
+                <button class="close-btn" onclick="closeHouseStudio()">&times;</button>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="studio-nav">
+            <button class="studio-tab-btn active" onclick="switchStudioTab('overview')">🏡 House Overview</button>
+            <button class="studio-tab-btn" onclick="switchStudioTab('room-studio')">🛋️ Room Studio</button>
+            <button class="studio-tab-btn" onclick="switchStudioTab('cost')">💰 Budget & Cost</button>
+        </div>
+
+        <!-- Studio Body -->
+        <div class="studio-body">
+            <!-- TAB 1: HOUSE OVERVIEW -->
+            <div id="tab-overview" class="tab-content active">
+                <div class="studio-grid-2">
+                    <div class="glass-card">
+                        <h4><i class="fas fa-layer-group" style="color:#818cf8;"></i> House Style Profile & Details</h4>
+                        <div id="house-profile-details" style="font-size:13px; color:#cbd5e1; line-height:1.8;">
+                            Loading house details...
+                        </div>
+                        <button class="btn-secondary" style="margin-top:14px; width:100%; font-size:13px; padding:10px;" onclick="openEditPaletteDialog()">
+                            <i class="fas fa-palette" style="color:#818cf8; margin-right:6px;"></i> 🎨 Change Color Palette & Style
+                        </button>
+                    </div>
+                    <div class="glass-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                            <h4><i class="fas fa-wand-magic-sparkles" style="color:#60a5fa;"></i> Level 2: Whole-House Design</h4>
+                            <p style="font-size:13px; color:#94a3b8; line-height:1.6; margin-bottom:16px;">
+                                Generate a synchronized architectural design language across all rooms, keeping materials, lighting, and palette consistent throughout the house.
+                            </p>
+                        </div>
+                        <button id="btn-gen-whole-house" class="btn-accent" style="padding:14px 24px; font-size:15px; width:100%;" onclick="generateWholeHouseDesign()">
+                            ✨ Generate Whole-House Unified Design
+                        </button>
+                    </div>
+                </div>
+
+                <div id="whole-house-designs-section" style="margin-top:24px; display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <h4 style="font-size:18px; color:white; display:flex; align-items:center; gap:8px;">
+                            <i class="fas fa-images" style="color:#60a5fa;"></i> Generated Whole-House Visualizations
+                        </h4>
+                        <span id="whole-house-designs-count" class="room-badge" style="background:rgba(59,130,246,0.2); color:#60a5fa;">0 Designs</span>
+                    </div>
+                    <div id="whole-house-gallery" class="studio-grid-3"></div>
+                </div>
+
+                <div style="margin-top:28px; display:flex; justify-content:space-between; align-items:center;">
+                    <h4 style="font-size:18px; color:white; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-door-open" style="color:#818cf8;"></i> Rooms in this Project
+                    </h4>
+                    <button class="btn-secondary" onclick="openAddRoomDialog()">➕ Add Room</button>
+                </div>
+
+                <div id="rooms-grid" class="studio-grid-3" style="margin-top:16px;">
+                    <!-- Room cards injected by JS -->
+                </div>
+            </div>
+
+            <!-- TAB 2: ROOM STUDIO (LEVEL 1) -->
+            <div id="tab-room-studio" class="tab-content">
+                <div style="display:flex; gap:16px; align-items:center; margin-bottom:20px; flex-wrap:wrap;">
+                    <label style="font-size:14px; color:#94a3b8; font-weight:600;">Active Room:</label>
+                    <select id="room-studio-select" class="project-select" style="min-width:240px;" onchange="onStudioRoomSelect()">
+                        <!-- Options injected by JS -->
+                    </select>
+                    <span id="room-dimensions-badge" class="room-badge">14 x 12 ft</span>
+                </div>
+
+                <div class="studio-grid-2">
+                    <!-- Left: Upload & Vision -->
+                    <div style="display:flex; flex-direction:column; gap:20px;">
+                        <div class="glass-card">
+                            <h4><i class="fas fa-camera" style="color:#818cf8;"></i> Upload Room Photos or Floor Plan</h4>
+                            <p style="font-size:12px; color:#94a3b8; margin-bottom:12px;">Upload single or multiple angles of the room for Computer Vision analysis.</p>
+                            
+                            <div class="upload-dropzone" onclick="document.getElementById('room-image-input').click()">
+                                <i class="fas fa-cloud-arrow-up" style="font-size:32px; color:#6366f1; margin-bottom:8px;"></i>
+                                <p style="font-size:13px; color:#e2e8f0; font-weight:500;">Click to upload room photos</p>
+                                <span style="font-size:11px; color:#64748b;">Supports JPG, PNG, WEBP (Multiple allowed)</span>
+                                <input type="file" id="room-image-input" multiple accept="image/*" style="display:none;" onchange="handleRoomImageUpload(this)">
+                            </div>
+                            
+                            <div id="uploaded-room-images" style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;"></div>
+                            
+                            <button class="btn-secondary" style="width:100%; margin-top:14px;" onclick="runRoomVisionAnalysis()">
+                                🔍 Run AI Computer Vision Analysis
+                            </button>
+                        </div>
+
+                        <!-- Computer Vision Analysis Results -->
+                        <div id="cv-analysis-card" class="glass-card" style="display:none;">
+                            <h4><i class="fas fa-brain" style="color:#a78bfa;"></i> AI Room Analysis (Vision Output)</h4>
+                            <div id="cv-analysis-content" style="font-size:13px; color:#cbd5e1; line-height:1.7;"></div>
+                        </div>
+
+                        <!-- Generate Button -->
+                        <div class="glass-card">
+                            <h4><i class="fas fa-palette" style="color:#60a5fa;"></i> Generate Room Design</h4>
+                            <div class="form-group">
+                                <label>Target Style</label>
+                                <select id="room-style-override" class="form-control">
+                                    <option value="Modern Luxury">Modern Luxury</option>
+                                    <option value="Minimalist">Minimalist</option>
+                                    <option value="Contemporary">Contemporary</option>
+                                    <option value="Scandinavian">Scandinavian</option>
+                                    <option value="Japandi">Japandi</option>
+                                    <option value="Indian Contemporary">Indian Contemporary</option>
+                                    <option value="Industrial">Industrial</option>
+                                    <option value="Traditional">Traditional</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-top:12px;">
+                                <label>Color Palette / Accent Tone</label>
+                                <select id="room-palette-override" class="form-control" onchange="onRoomPaletteSelectChange(this.value)">
+                                    <option value="">Default (From House Style)</option>
+                                    <option value="Warm White, Cream Beige, Walnut Wood, Brass">🌟 Warm Luxe (Warm White, Cream, Walnut, Brass)</option>
+                                    <option value="Pure White, Sage Green, Ash Blonde Wood, Charcoal">🌿 Scandinavian Sage (White, Sage Green, Ash Wood)</option>
+                                    <option value="Crisp White, Ash Grey, Slate, Matte Black">🖤 Monochrome Modern (White, Grey, Slate, Matte Black)</option>
+                                    <option value="Warm Sand, Terracotta, Olive, Natural Teak">🏺 Earthy Terracotta (Sand, Terracotta, Olive, Teak)</option>
+                                    <option value="Off-White, Sea Salt Blue, Driftwood, Pale Sand">🌊 Coastal Serenity (Off-White, Sea Salt Blue, Driftwood)</option>
+                                    <option value="Warm Cream, Soft Lavender, Blush Pink, Mint">🌸 Pastel Play / Kids (Cream, Lavender, Blush, Mint)</option>
+                                    <option value="Charcoal, Cognac Leather, Raw Steel, Dark Walnut">🏭 Industrial Loft (Charcoal, Cognac, Steel, Dark Walnut)</option>
+                                    <option value="custom">🎨 Custom Palette...</option>
+                                </select>
+                                <input type="text" id="room-custom-palette-input" class="form-control" style="display:none; margin-top:8px;" placeholder="e.g. Ivory, Emerald Green, Brushed Gold">
+                            </div>
+                            <button id="btn-generate-room" class="btn-accent" style="width:100%; padding:12px; margin-top:14px;" onclick="generateCurrentRoomDesign()">
+                                ✨ Generate Photorealistic Visualization
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Visualization & Chatbot -->
+                    <div style="display:flex; flex-direction:column; gap:20px;">
+                        <!-- Visualization Preview -->
+                        <div class="glass-card">
+                            <h4><i class="fas fa-image" style="color:#38bdf8;"></i> Design Visualization</h4>
+                            <div id="room-design-preview-container" style="text-align:center; min-height:220px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#0f172a; border-radius:14px; overflow:hidden;">
+                                <p style="font-size:13px; color:#64748b; padding:40px;">No design generated yet. Click generate to visualize.</p>
+                            </div>
+                            <div id="room-design-explanation" style="font-size:13px; color:#94a3b8; line-height:1.6; margin-top:14px; display:none;"></div>
+                        </div>
+
+                        <!-- Recommendations & Specifications -->
+                        <div id="room-recs-card" class="glass-card" style="display:none;">
+                            <h4><i class="fas fa-couch" style="color:#34d399;"></i> Furniture, Materials & Lighting</h4>
+                            <div id="room-recs-content"></div>
+                        </div>
+
+                        <!-- Interactive Contextual Chatbot -->
+                        <div class="glass-card">
+                            <h4><i class="fas fa-comments" style="color:#f472b6;"></i> Contextual AI Design Assistant</h4>
+                            <div class="chat-container">
+                                <div id="room-chat-messages" class="chat-messages">
+                                    <div class="chat-bubble assistant">
+                                        Hello! I'm DecoraAI, your AI Interior Designer. I have full context of this room and your house design project. Ask me any design or styling questions!
+                                    </div>
+                                </div>
+                                <div class="chat-input-bar">
+                                    <input type="text" id="room-chat-input" placeholder="e.g. What sofa fabric and lighting setup do you suggest?" onkeydown="if(event.key==='Enter') sendRoomChatMessage()">
+                                    <button onclick="sendRoomChatMessage()">Send</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: HOUSE COST & BUDGET -->
+            <div id="tab-cost" class="tab-content">
+                <div class="studio-grid-2">
+                    <div class="glass-card">
+                        <h4><i class="fas fa-calculator" style="color:#34d399;"></i> Total House Cost Estimate</h4>
+                        <div id="house-cost-summary" style="font-size:14px; color:#e2e8f0; line-height:1.8;">
+                            Loading cost data...
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <h4><i class="fas fa-coins" style="color:#fbbf24;"></i> Budget vs Cost Overview</h4>
+                        <div id="budget-comparison-box" style="font-size:14px; color:#cbd5e1; line-height:1.8;">
+                            Loading budget analysis...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="margin-top:24px;">
+                    <h4><i class="fas fa-list-check" style="color:#818cf8;"></i> Room-by-Room Cost Breakdown</h4>
+                    <div id="room-cost-table-container" style="overflow-x:auto;">
+                        <!-- Injected table -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CREATE HOUSE MODAL -->
+<div id="create-house-dialog" class="dialog-modal">
+    <div class="dialog-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h4 style="font-size:18px; color:white;">Create New House Project</h4>
+            <button class="close-btn" onclick="closeCreateHouseDialog()">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); submitCreateHouse();">
+            <div class="form-group">
+                <label>Project Name</label>
+                <input type="text" id="new-house-name" class="form-control" placeholder="e.g. My Sunset Villa" required>
+            </div>
+            <div class="form-group">
+                <label>Total House Budget (₹ INR)</label>
+                <input type="number" id="new-house-budget" class="form-control" value="1500000" step="50000" required>
+            </div>
+            <div class="form-group">
+                <label>Approx House Area (sq. ft.)</label>
+                <input type="number" id="new-house-area" class="form-control" value="1600" required>
+            </div>
+            <div class="form-group">
+                <label>Primary Interior Style</label>
+                <select id="new-house-style" class="form-control">
+                    <option value="Modern Luxury">Modern Luxury</option>
+                    <option value="Minimalist">Minimalist</option>
+                    <option value="Scandinavian">Scandinavian</option>
+                    <option value="Japandi">Japandi</option>
+                    <option value="Indian Contemporary">Indian Contemporary</option>
+                    <option value="Industrial">Industrial</option>
+                    <option value="Traditional">Traditional</option>
+                </select>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-secondary" onclick="closeCreateHouseDialog()">Cancel</button>
+                <button type="submit" class="btn-accent">Create Project</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADD ROOM MODAL -->
+<div id="add-room-dialog" class="dialog-modal">
+    <div class="dialog-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h4 style="font-size:18px; color:white;">Add Room to House</h4>
+            <button class="close-btn" onclick="closeAddRoomDialog()">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); submitAddRoom();">
+            <div class="form-group">
+                <label>Room Name</label>
+                <input type="text" id="new-room-name" class="form-control" placeholder="e.g. Master Bedroom" required>
+            </div>
+            <div class="form-group">
+                <label>Room Type</label>
+                <select id="new-room-type" class="form-control">
+                    <option value="living_room">Living Room</option>
+                    <option value="master_bedroom">Master Bedroom</option>
+                    <option value="bedroom">Bedroom</option>
+                    <option value="kids_bedroom">Kids Bedroom</option>
+                    <option value="guest_bedroom">Guest Bedroom</option>
+                    <option value="kitchen">Kitchen</option>
+                    <option value="dining_room">Dining Room</option>
+                    <option value="bathroom">Bathroom</option>
+                    <option value="study_room">Study Room</option>
+                    <option value="home_office">Home Office</option>
+                    <option value="balcony">Balcony</option>
+                    <option value="pooja_room">Pooja Room</option>
+                    <option value="utility_room">Utility Room</option>
+                    <option value="store_room">Store Room</option>
+                    <option value="entrance_foyer">Entrance / Foyer</option>
+                    <option value="hallway">Hallway / Corridor</option>
+                    <option value="terrace">Terrace</option>
+                    <option value="garage">Garage</option>
+                </select>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label>Length (ft)</label>
+                    <input type="number" id="new-room-length" class="form-control" value="14" required>
+                </div>
+                <div class="form-group">
+                    <label>Width (ft)</label>
+                    <input type="number" id="new-room-width" class="form-control" value="12" required>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-secondary" onclick="closeAddRoomDialog()">Cancel</button>
+                <button type="submit" class="btn-accent">Add Room</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT HOUSE PALETTE & STYLE MODAL -->
+<div id="edit-palette-dialog" class="dialog-modal">
+    <div class="dialog-card" style="max-width:580px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h4 style="font-size:18px; color:white;"><i class="fas fa-palette" style="color:#818cf8;"></i> Change Color Palette & Style</h4>
+            <button class="close-btn" onclick="closeEditPaletteDialog()">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); submitEditHousePalette();">
+            <div class="form-group">
+                <label>Primary House Style</label>
+                <select id="edit-house-style" class="form-control">
+                    <option value="Modern Luxury">Modern Luxury</option>
+                    <option value="Minimalist">Minimalist</option>
+                    <option value="Contemporary">Contemporary</option>
+                    <option value="Scandinavian">Scandinavian</option>
+                    <option value="Japandi">Japandi</option>
+                    <option value="Indian Contemporary">Indian Contemporary</option>
+                    <option value="Industrial">Industrial</option>
+                    <option value="Traditional">Traditional</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Curated Color Palettes (Click to apply)</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+                    <button type="button" class="btn-secondary" style="font-size:11px; text-align:left; padding:8px;" onclick="applyPresetPalette(['Warm White', 'Cream Beige', 'Walnut Wood', 'Brass'])">
+                        🌟 <strong>Warm Luxe</strong><br><span style="color:#94a3b8;">Warm White, Cream, Walnut, Brass</span>
+                    </button>
+                    <button type="button" class="btn-secondary" style="font-size:11px; text-align:left; padding:8px;" onclick="applyPresetPalette(['Pure White', 'Sage Green', 'Ash Blonde Wood', 'Charcoal'])">
+                        🌿 <strong>Scandinavian Sage</strong><br><span style="color:#94a3b8;">White, Sage, Ash Wood, Charcoal</span>
+                    </button>
+                    <button type="button" class="btn-secondary" style="font-size:11px; text-align:left; padding:8px;" onclick="applyPresetPalette(['Crisp White', 'Ash Grey', 'Slate', 'Matte Black'])">
+                        🖤 <strong>Monochrome Noir</strong><br><span style="color:#94a3b8;">White, Ash Grey, Slate, Black</span>
+                    </button>
+                    <button type="button" class="btn-secondary" style="font-size:11px; text-align:left; padding:8px;" onclick="applyPresetPalette(['Warm Sand', 'Terracotta', 'Olive', 'Natural Teak'])">
+                        🏺 <strong>Earthy Terracotta</strong><br><span style="color:#94a3b8;">Sand, Terracotta, Olive, Teak</span>
+                    </button>
+                    <button type="button" class="btn-secondary" style="font-size:11px; text-align:left; padding:8px;" onclick="applyPresetPalette(['Off-White', 'Sea Salt Blue', 'Driftwood', 'Pale Sand'])">
+                        🌊 <strong>Coastal Serenity</strong><br><span style="color:#94a3b8;">Off-White, Sea Blue, Driftwood</span>
+                    </button>
+                    <button type="button" class="btn-secondary" style="font-size:11px; text-align:left; padding:8px;" onclick="applyPresetPalette(['Warm Cream', 'Soft Lavender', 'Blush Pink', 'Mint'])">
+                        🌸 <strong>Pastel Play</strong><br><span style="color:#94a3b8;">Cream, Lavender, Blush, Mint</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Color Palette (Comma-separated tones)</label>
+                <input type="text" id="edit-house-palette" class="form-control" placeholder="e.g. Warm White, Sage Green, Walnut Wood" required>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label>Flooring Material</label>
+                    <select id="edit-house-flooring" class="form-control">
+                        <option value="Light Italian Marble">Light Italian Marble</option>
+                        <option value="Warm Engineered Oak Hardwood">Warm Engineered Oak Hardwood</option>
+                        <option value="Matte Grey Vitrified Tiles">Matte Grey Vitrified Tiles</option>
+                        <option value="Natural Teak Planks">Natural Teak Planks</option>
+                        <option value="Polished Terrazzo">Polished Terrazzo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Lighting Temperature</label>
+                    <select id="edit-house-lighting" class="form-control">
+                        <option value="Warm White (3000K)">Warm White (3000K)</option>
+                        <option value="Soft Golden (2700K)">Soft Golden (2700K)</option>
+                        <option value="Neutral Daylight (4000K)">Neutral Daylight (4000K)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-secondary" onclick="closeEditPaletteDialog()">Cancel</button>
+                <button type="submit" class="btn-accent">Save Palette & Style</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
