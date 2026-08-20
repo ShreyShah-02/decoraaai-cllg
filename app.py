@@ -284,40 +284,6 @@ def delete_db_table_row(table_name, row_id):
         db_session.rollback()
         return jsonify({"error": str(e)}), 500
 
-@app.route("/api/admin/db/query", methods=["POST"])
-@admin_required
-def run_db_query():
-    data = request.get_json() or {}
-    raw_query = data.get("query", "").strip()
-
-    if not raw_query:
-        return jsonify({"error": "Query cannot be empty"}), 400
-
-    start_time = time.time()
-    try:
-        result = db_session.execute(text(raw_query))
-        elapsed_ms = round((time.time() - start_time) * 1000, 2)
-
-        if result.returns_rows:
-            columns = list(result.keys())
-            rows = [dict(zip(columns, row)) for row in result.fetchall()]
-            return jsonify({
-                "columns": columns,
-                "rows": rows,
-                "execution_time_ms": elapsed_ms
-            })
-        else:
-            db_session.commit()
-            return jsonify({
-                "columns": [],
-                "rows": [],
-                "message": f"Query executed successfully ({result.rowcount} rows affected)",
-                "execution_time_ms": elapsed_ms
-            })
-    except Exception as e:
-        db_session.rollback()
-        return jsonify({"error": str(e)}), 400
-
 # ==============================================================================
 # 4. HOUSE PROJECT APIs (LEVEL 2)
 # ==============================================================================

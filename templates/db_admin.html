@@ -280,9 +280,6 @@
                     <button id="tab-data-btn" class="tab-btn active" onclick="switchView('data')">
                         <i class="fas fa-table-cells"></i> Data Explorer
                     </button>
-                    <button id="tab-sql-btn" class="tab-btn" onclick="switchView('sql')">
-                        <i class="fas fa-terminal"></i> SQL Query Runner
-                    </button>
                     <button id="tab-guide-btn" class="tab-btn" onclick="switchView('guide')">
                         <i class="fas fa-book-open"></i> DB Connection Guide
                     </button>
@@ -314,32 +311,6 @@
                                     <tr><td style="text-align:center; padding:40px; color:#64748b;">No table selected</td></tr>
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- VIEW 2: SQL RUNNER -->
-                <div id="view-sql" style="display:none;">
-                    <div class="sql-editor-container">
-                        <div class="glass-card">
-                            <h4><i class="fas fa-code" style="color:#818cf8;"></i> Execute SQL Query</h4>
-                            <textarea id="sql-query-input" class="sql-textarea" placeholder="SELECT * FROM users LIMIT 10;">SELECT * FROM house_projects LIMIT 10;</textarea>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
-                                <span style="font-size:12px; color:#64748b;">Supports SELECT queries on all database tables.</span>
-                                <button class="btn-accent" onclick="runCustomSql()"><i class="fas fa-play"></i> Run Query</button>
-                            </div>
-                        </div>
-
-                        <div class="data-table-container" id="sql-result-container" style="display:none;">
-                            <div class="table-controls">
-                                <span id="sql-result-count" style="font-size:13px; font-weight:600; color:#34d399;">0 rows returned</span>
-                            </div>
-                            <div style="overflow-x:auto;">
-                                <table class="db-grid" id="sql-grid">
-                                    <thead id="sql-grid-header"></thead>
-                                    <tbody id="sql-grid-body"></tbody>
-                                </table>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -565,45 +536,6 @@
             a.href = url;
             a.download = `${currentTable}_export.json`;
             a.click();
-        }
-
-        async function runCustomSql() {
-            const query = document.getElementById("sql-query-input").value.trim();
-            if (!query) return;
-
-            try {
-                const res = await fetch("/api/admin/db/query", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ query })
-                });
-                const data = await res.json();
-                const container = document.getElementById("sql-result-container");
-                const countBadge = document.getElementById("sql-result-count");
-                const thead = document.getElementById("sql-grid-header");
-                const tbody = document.getElementById("sql-grid-body");
-
-                container.style.display = "block";
-
-                if (data.error) {
-                    countBadge.style.color = "#f87171";
-                    countBadge.innerText = `Error: ${data.error}`;
-                    thead.innerHTML = "";
-                    tbody.innerHTML = "";
-                    return;
-                }
-
-                countBadge.style.color = "#34d399";
-                countBadge.innerText = `✓ ${data.rows.length} rows returned in ${data.execution_time_ms}ms`;
-
-                thead.innerHTML = (data.columns || []).map(c => `<th>${c}</th>`).join("");
-                tbody.innerHTML = (data.rows || []).map(r => {
-                    return `<tr>${data.columns.map(c => `<td>${escapeHtml(String(r[c] ?? 'NULL'))}</td>`).join("")}</tr>`;
-                }).join("");
-
-            } catch (e) {
-                alert("Query execution failed.");
-            }
         }
 
         function escapeHtml(str) {
