@@ -840,26 +840,81 @@ Using Stable Diffusion fine tuning.
                 <label>Project Name</label>
                 <input type="text" id="new-house-name" class="form-control" placeholder="e.g. My Sunset Villa" required>
             </div>
-            <div class="form-group">
-                <label>Total House Budget (₹ INR)</label>
-                <input type="number" id="new-house-budget" class="form-control" value="1500000" step="50000" required>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label>Property Architecture</label>
+                    <select id="new-house-property-type" class="form-control" onchange="onPropertyTypeChange(this.value)">
+                        <option value="villa">🏡 Independent Villa</option>
+                        <option value="multi_villa">🏰 Multi-Villa Complex / Resort</option>
+                        <option value="apartment">🏢 Modern Apartment / Flat</option>
+                        <option value="duplex">🏛️ Duplex Penthouse</option>
+                        <option value="row_house">🏘️ Row House / Townhouse</option>
+                    </select>
+                </div>
+                <div class="form-group" id="num-villas-group">
+                    <label>Number of Villas / Units</label>
+                    <select id="new-house-num-villas" class="form-control">
+                        <option value="1">1 Villa (Single Unit)</option>
+                        <option value="2">2 Villas</option>
+                        <option value="3">3 Villas</option>
+                        <option value="4">4 Villas</option>
+                        <option value="5">5 Villas</option>
+                    </select>
+                </div>
             </div>
+
             <div class="form-group">
-                <label>Approx House Area (sq. ft.)</label>
-                <input type="number" id="new-house-area" class="form-control" value="1600" required>
-            </div>
-            <div class="form-group">
-                <label>Primary Interior Style</label>
-                <select id="new-house-style" class="form-control">
-                    <option value="Modern Luxury">Modern Luxury</option>
-                    <option value="Minimalist">Minimalist</option>
-                    <option value="Scandinavian">Scandinavian</option>
-                    <option value="Japandi">Japandi</option>
-                    <option value="Indian Contemporary">Indian Contemporary</option>
-                    <option value="Industrial">Industrial</option>
-                    <option value="Traditional">Traditional</option>
+                <label>Room Configuration / Number of Rooms</label>
+                <select id="new-house-room-config" class="form-control" onchange="onRoomConfigChange(this.value)">
+                    <option value="1bhk">1 BHK (5 Rooms - Bed, Living, Kitchen, Bath, Balcony)</option>
+                    <option value="2bhk">2 BHK (7 Rooms - Master, Kids, Living, Dining, Kitchen, Bath, Balcony)</option>
+                    <option value="3bhk" selected>3 BHK Family Home (9 Rooms - Master, Kids, Guest, Living, Dining, Kitchen, Pooja, Bath, Balcony)</option>
+                    <option value="4bhk_villa">4 BHK Luxury Villa (12 Rooms - 4 Beds, Living, Dining, Kitchen, Study, Pooja, Bath, Balcony)</option>
+                    <option value="5bhk_estate">5 BHK Grand Estate (15 Rooms - 5 Suites, Grand Living, Dining, Kitchen, Office, Theatre, Terrace)</option>
+                    <option value="custom">✏️ Custom Number of Rooms...</option>
                 </select>
             </div>
+
+            <div class="form-group" id="custom-room-count-group" style="display:none;">
+                <label>Exact Number of Rooms</label>
+                <input type="number" id="new-house-custom-rooms" class="form-control" value="6" min="1" max="15">
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label>Total Budget (₹ INR)</label>
+                    <input type="number" id="new-house-budget" class="form-control" value="1500000" step="50000" required>
+                </div>
+                <div class="form-group">
+                    <label>Approx Area (sq. ft.)</label>
+                    <input type="number" id="new-house-area" class="form-control" value="1800" required>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label>Number of Floors</label>
+                    <select id="new-house-floors" class="form-control">
+                        <option value="1">1 Floor (Ground Floor)</option>
+                        <option value="2">2 Floors (G + 1 Duplex)</option>
+                        <option value="3">3 Floors (G + 2 Triplex)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Primary Interior Style</label>
+                    <select id="new-house-style" class="form-control">
+                        <option value="Modern Luxury">Modern Luxury</option>
+                        <option value="Minimalist">Minimalist</option>
+                        <option value="Scandinavian">Scandinavian</option>
+                        <option value="Japandi">Japandi</option>
+                        <option value="Indian Contemporary">Indian Contemporary</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Traditional">Traditional</option>
+                    </select>
+                </div>
+            </div>
+
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                 <button type="button" class="btn-secondary" onclick="closeCreateHouseDialog()">Cancel</button>
                 <button type="submit" class="btn-accent">Create Project</button>

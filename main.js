@@ -760,11 +760,35 @@ function closeCreateHouseDialog() {
     document.getElementById("create-house-dialog").classList.remove("active");
 }
 
+function onPropertyTypeChange(val) {
+    const villaGroup = document.getElementById("num-villas-group");
+    if (val === "multi_villa" || val === "villa") {
+        villaGroup.style.display = "block";
+    } else {
+        villaGroup.style.display = "none";
+        document.getElementById("new-house-num-villas").value = "1";
+    }
+}
+
+function onRoomConfigChange(val) {
+    const customGroup = document.getElementById("custom-room-count-group");
+    if (val === "custom") {
+        customGroup.style.display = "block";
+    } else {
+        customGroup.style.display = "none";
+    }
+}
+
 async function submitCreateHouse() {
     const name = document.getElementById("new-house-name").value.trim();
     const budget = parseFloat(document.getElementById("new-house-budget").value);
     const area = parseFloat(document.getElementById("new-house-area").value);
     const style = document.getElementById("new-house-style").value;
+    const property_type = document.getElementById("new-house-property-type").value;
+    const num_villas = parseInt(document.getElementById("new-house-num-villas").value) || 1;
+    const room_config = document.getElementById("new-house-room-config").value;
+    const custom_rooms = parseInt(document.getElementById("new-house-custom-rooms").value) || 6;
+    const floors = parseInt(document.getElementById("new-house-floors").value) || 1;
 
     try {
         const res = await fetch("/api/house/create", {
@@ -774,7 +798,12 @@ async function submitCreateHouse() {
                 name,
                 total_budget: budget,
                 approx_area_sqft: area,
-                primary_style: style
+                primary_style: style,
+                property_type,
+                num_villas,
+                room_config,
+                num_rooms: custom_rooms,
+                floors
             })
         });
         const data = await res.json();

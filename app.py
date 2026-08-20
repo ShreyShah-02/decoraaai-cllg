@@ -322,6 +322,94 @@ def run_db_query():
 # 4. HOUSE PROJECT APIs (LEVEL 2)
 # ==============================================================================
 
+def generate_default_rooms_for_config(config_type: str, num_villas: int = 1, custom_count: int = 6):
+    def get_unit_rooms(prefix=""):
+        if config_type == "1bhk":
+            return [
+                {"name": f"{prefix}Living Room", "room_type": "living_room", "length_ft": 16, "width_ft": 14},
+                {"name": f"{prefix}Master Bedroom", "room_type": "master_bedroom", "length_ft": 14, "width_ft": 12},
+                {"name": f"{prefix}Kitchen", "room_type": "kitchen", "length_ft": 10, "width_ft": 8},
+                {"name": f"{prefix}Bathroom 1", "room_type": "bathroom", "length_ft": 8, "width_ft": 6},
+                {"name": f"{prefix}Balcony", "room_type": "balcony", "length_ft": 10, "width_ft": 4}
+            ]
+        elif config_type == "2bhk":
+            return [
+                {"name": f"{prefix}Living Room", "room_type": "living_room", "length_ft": 18, "width_ft": 14},
+                {"name": f"{prefix}Master Bedroom", "room_type": "master_bedroom", "length_ft": 15, "width_ft": 13},
+                {"name": f"{prefix}Kids Bedroom", "room_type": "kids_bedroom", "length_ft": 13, "width_ft": 11},
+                {"name": f"{prefix}Kitchen", "room_type": "kitchen", "length_ft": 12, "width_ft": 10},
+                {"name": f"{prefix}Dining Room", "room_type": "dining_room", "length_ft": 11, "width_ft": 10},
+                {"name": f"{prefix}Bathroom 1", "room_type": "bathroom", "length_ft": 8, "width_ft": 6},
+                {"name": f"{prefix}Balcony", "room_type": "balcony", "length_ft": 12, "width_ft": 5}
+            ]
+        elif config_type == "4bhk_villa":
+            return [
+                {"name": f"{prefix}Grand Living Room", "room_type": "living_room", "length_ft": 24, "width_ft": 16},
+                {"name": f"{prefix}Master Bedroom Suite", "room_type": "master_bedroom", "length_ft": 18, "width_ft": 15},
+                {"name": f"{prefix}Kids Bedroom", "room_type": "kids_bedroom", "length_ft": 15, "width_ft": 13},
+                {"name": f"{prefix}Guest Bedroom", "room_type": "guest_bedroom", "length_ft": 14, "width_ft": 12},
+                {"name": f"{prefix}Parents Bedroom", "room_type": "bedroom", "length_ft": 15, "width_ft": 13},
+                {"name": f"{prefix}Gourmet Kitchen", "room_type": "kitchen", "length_ft": 16, "width_ft": 12},
+                {"name": f"{prefix}Formal Dining Room", "room_type": "dining_room", "length_ft": 15, "width_ft": 12},
+                {"name": f"{prefix}Master Spa Bathroom", "room_type": "bathroom", "length_ft": 10, "width_ft": 8},
+                {"name": f"{prefix}Common Bathroom", "room_type": "bathroom", "length_ft": 8, "width_ft": 6},
+                {"name": f"{prefix}Pooja Room", "room_type": "pooja_room", "length_ft": 8, "width_ft": 6},
+                {"name": f"{prefix}Home Office / Study", "room_type": "home_office", "length_ft": 12, "width_ft": 10},
+                {"name": f"{prefix}Panoramic Balcony", "room_type": "balcony", "length_ft": 16, "width_ft": 6}
+            ]
+        elif config_type == "5bhk_estate":
+            return [
+                {"name": f"{prefix}Grand Living Hall", "room_type": "living_room", "length_ft": 26, "width_ft": 18},
+                {"name": f"{prefix}Master Suite", "room_type": "master_bedroom", "length_ft": 20, "width_ft": 16},
+                {"name": f"{prefix}Kids Bedroom", "room_type": "kids_bedroom", "length_ft": 15, "width_ft": 13},
+                {"name": f"{prefix}Guest Suite", "room_type": "guest_bedroom", "length_ft": 15, "width_ft": 13},
+                {"name": f"{prefix}Bedroom 4", "room_type": "bedroom", "length_ft": 14, "width_ft": 13},
+                {"name": f"{prefix}Bedroom 5", "room_type": "bedroom", "length_ft": 14, "width_ft": 12},
+                {"name": f"{prefix}Chef Kitchen", "room_type": "kitchen", "length_ft": 18, "width_ft": 12},
+                {"name": f"{prefix}Formal Dining", "room_type": "dining_room", "length_ft": 16, "width_ft": 14},
+                {"name": f"{prefix}Master Spa Bathroom", "room_type": "bathroom", "length_ft": 12, "width_ft": 9},
+                {"name": f"{prefix}Common Bathroom", "room_type": "bathroom", "length_ft": 8, "width_ft": 6},
+                {"name": f"{prefix}Pooja Sanctuary", "room_type": "pooja_room", "length_ft": 9, "width_ft": 7},
+                {"name": f"{prefix}Home Theatre / Lounge", "room_type": "living_room", "length_ft": 16, "width_ft": 14},
+                {"name": f"{prefix}Study / Office", "room_type": "home_office", "length_ft": 14, "width_ft": 11},
+                {"name": f"{prefix}Terrace Lounge", "room_type": "terrace", "length_ft": 20, "width_ft": 12},
+                {"name": f"{prefix}Balcony", "room_type": "balcony", "length_ft": 18, "width_ft": 6}
+            ]
+        elif config_type == "custom":
+            all_types = [
+                ("Living Room", "living_room"), ("Master Bedroom", "master_bedroom"),
+                ("Kitchen", "kitchen"), ("Dining Room", "dining_room"),
+                ("Kids Bedroom", "kids_bedroom"), ("Guest Bedroom", "guest_bedroom"),
+                ("Pooja Room", "pooja_room"), ("Home Office", "home_office"),
+                ("Bathroom 1", "bathroom"), ("Bathroom 2", "bathroom"),
+                ("Balcony", "balcony"), ("Terrace", "terrace")
+            ]
+            res = []
+            for i in range(min(max(custom_count, 1), len(all_types))):
+                name, rtype = all_types[i]
+                res.append({"name": f"{prefix}{name}", "room_type": rtype, "length_ft": 14, "width_ft": 12})
+            return res
+        else:  # Default 3bhk
+            return [
+                {"name": f"{prefix}Living Room", "room_type": "living_room", "length_ft": 20, "width_ft": 15},
+                {"name": f"{prefix}Master Bedroom", "room_type": "master_bedroom", "length_ft": 16, "width_ft": 14},
+                {"name": f"{prefix}Kids Bedroom", "room_type": "kids_bedroom", "length_ft": 14, "width_ft": 12},
+                {"name": f"{prefix}Guest Bedroom", "room_type": "guest_bedroom", "length_ft": 13, "width_ft": 12},
+                {"name": f"{prefix}Kitchen", "room_type": "kitchen", "length_ft": 14, "width_ft": 10},
+                {"name": f"{prefix}Dining Room", "room_type": "dining_room", "length_ft": 13, "width_ft": 11},
+                {"name": f"{prefix}Bathroom 1", "room_type": "bathroom", "length_ft": 8, "width_ft": 6},
+                {"name": f"{prefix}Pooja Room", "room_type": "pooja_room", "length_ft": 8, "width_ft": 6},
+                {"name": f"{prefix}Balcony", "room_type": "balcony", "length_ft": 14, "width_ft": 5}
+            ]
+
+    all_rooms = []
+    if num_villas > 1:
+        for v in range(1, num_villas + 1):
+            all_rooms.extend(get_unit_rooms(f"Villa {v} - "))
+    else:
+        all_rooms = get_unit_rooms("")
+    return all_rooms
+
 @app.route("/api/house/create", methods=["POST"])
 def create_house_project():
     data = request.get_json() or {}
@@ -331,6 +419,9 @@ def create_house_project():
     floors = int(data.get("floors", 1))
     lifestyle = data.get("lifestyle_requirements", ["Family", "Work from Home"])
     style = data.get("primary_style", "Modern Luxury")
+    room_config = data.get("room_config", "3bhk")
+    num_villas = int(data.get("num_villas", 1))
+    num_rooms = int(data.get("num_rooms", 6))
     user_id = session.get("user_id")
 
     house = HouseProject(
@@ -356,21 +447,20 @@ def create_house_project():
     )
     db_session.add(style_profile)
 
-    # Populate Default Rooms if not explicitly provided
-    rooms_input = data.get("rooms", [
-        {"name": "Living Room", "room_type": "living_room", "length_ft": 16, "width_ft": 14},
-        {"name": "Master Bedroom", "room_type": "master_bedroom", "length_ft": 15, "width_ft": 13},
-        {"name": "Kitchen", "room_type": "kitchen", "length_ft": 12, "width_ft": 10},
-        {"name": "Dining Room", "room_type": "dining_room", "length_ft": 12, "width_ft": 10},
-        {"name": "Bathroom 1", "room_type": "bathroom", "length_ft": 8, "width_ft": 6},
-        {"name": "Balcony", "room_type": "balcony", "length_ft": 10, "width_ft": 5}
-    ])
+    # Populate Rooms based on room_config and num_villas if not explicitly given
+    rooms_input = data.get("rooms")
+    if not rooms_input:
+        rooms_input = generate_default_rooms_for_config(room_config, num_villas=num_villas, custom_count=num_rooms)
 
     for r_data in rooms_input:
+        r_name = r_data.get("name", "Room")
+        r_type = r_data.get("room_type")
+        resolved_type = normalize_room_type(r_name if not r_type or r_type == 'living_room' else r_type)
+
         room = Room(
             house_id=house.id,
-            name=r_data.get("name", "Room"),
-            room_type=r_data.get("room_type", "living_room"),
+            name=r_name,
+            room_type=resolved_type,
             floor_number=int(r_data.get("floor_number", 1)),
             length_ft=float(r_data.get("length_ft", 14.0)),
             width_ft=float(r_data.get("width_ft", 12.0)),
