@@ -15,7 +15,7 @@ load_dotenv()
 from models import (
     init_db, db_session, engine, User, HouseProject, HouseStyleProfile, Room, RoomImage,
     RoomAnalysis, UserPreferences, Design, FurnitureRecommendation,
-    CostEstimate, DesignChat, AsyncJob
+    CostEstimate, DesignChat, AsyncJob, DesignFeedback, DesignOrder
 )
 
 # Import AI Engine Services
@@ -282,6 +282,107 @@ def delete_db_table_row(table_name, row_id):
             return jsonify({"status": "success", "message": f"Record (ID: {row_id}) deleted from '{table_name}'."})
     except Exception as e:
         db_session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/admin/analytics", methods=["GET"])
+@admin_required
+def get_admin_analytics():
+    try:
+        total_users = db_session.query(User).count()
+        total_projects = db_session.query(HouseProject).count()
+        total_rooms = db_session.query(Room).count()
+        total_designs = db_session.query(Design).count()
+        total_feedbacks = db_session.query(DesignFeedback).count()
+        avg_rating = db_session.query(db_session.query(DesignFeedback.rating).subquery()).first()
+        
+        # Calculate total estimated project value
+        estimates = db_session.query(CostEstimate).all()
+        total_estimated_value = sum([e.total_cost for e in estimates if e.total_cost])
+        
+        feedbacks = db_session.query(DesignFeedback).all()
+        calc_avg = round(sum([f.rating for f in feedbacks]) / len(feedbacks), 1) if feedbacks else 5.0
+        
+        return jsonify({
+            "status": "success",
+            "analytics": {
+                "total_users": total_users,
+                "total_projects": total_projects,
+                "total_rooms": total_rooms,
+                "total_designs": total_designs,
+                "total_feedbacks": total_feedbacks,
+                "average_rating": calc_avg,
+                "total_project_value_inr": round(total_estimated_value, 2)
+            }
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/design/<int:design_id>/feedback", methods=["POST"])
+def submit_design_feedback(design_id):
+    data = request.get_json() or {}
+    rating = int(data.get("rating", 5))
+    feedback_text = data.get("feedback_text", "").strip()
+    user_id = session.get("user_id")
+
+    try:
+        fb = DesignFeedback(
+            design_id=design_id,
+            user_id=user_id,
+            rating=max(1, min(5, rating)),
+            feedback_text=feedback_text
+        )
+        db_session.add(fb)
+        db_session.commit()
+        return jsonify({"status": "success", "message": "Feedback submitted successfully!", "feedback": fb.to_dict()})
+    except Exception as e:
+        db_session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/designs/search", methods=["GET"])
+def search_designs():
+    query_str = request.args.get("q", "").strip().lower()
+    try:
+        designs = db_session.query(Design).all()
+        if query_str:
+            matched = [
+                d.to_dict() for d in designs
+                if query_str in (d.title or "").lower() or query_str in (d.prompt or "").lower() or query_str in (d.explanation or "").lower()
+            ]
+        else:
+            matched = [d.to_dict() for d in designs[-20:]]
+        return jsonify({"status": "success", "count": len(matched), "designs": matched})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/orders/create", methods=["POST"])
+def create_order():
+    data = request.get_json() or {}
+    order_type = data.get("order_type", "Design Consultation")
+    house_id = data.get("house_id")
+    amount = float(data.get("amount_inr", 5000.0))
+    user_id = session.get("user_id")
+
+    try:
+        order = DesignOrder(
+            user_id=user_id,
+            house_id=house_id,
+            order_type=order_type,
+            status="CONFIRMED",
+            amount_inr=amount
+        )
+        db_session.add(order)
+        db_session.commit()
+        return jsonify({"status": "success", "message": "Order placed successfully!", "order": order.to_dict()})
+    except Exception as e:
+        db_session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/orders", methods=["GET"])
+def list_orders():
+    try:
+        orders = db_session.query(DesignOrder).all()
+        return jsonify({"status": "success", "orders": [o.to_dict() for o in orders]})
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 # ==============================================================================

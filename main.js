@@ -483,7 +483,22 @@ async function loadActiveRoomStudio() {
         if (currentRoomData.designs && currentRoomData.designs.length > 0) {
             const latest = currentRoomData.designs[currentRoomData.designs.length - 1];
             currentDesignId = latest.id;
-            prevContainer.innerHTML = `<img src="${latest.image_url}" style="width:100%; border-radius:14px; max-height:360px; object-fit:cover;">`;
+            prevContainer.innerHTML = `
+                <img src="${latest.image_url}" style="width:100%; border-radius:14px; max-height:360px; object-fit:cover;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; gap:8px; flex-wrap:wrap;">
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-secondary" style="font-size:12px; padding:6px 12px;" onclick="downloadDesignImage('${latest.image_url}')">
+                            <i class="fas fa-download"></i> Save / Download
+                        </button>
+                        <button class="btn-secondary" style="font-size:12px; padding:6px 12px;" onclick="shareDesignLink(${latest.id}, '${latest.image_url}')">
+                            <i class="fas fa-share-nodes"></i> Share
+                        </button>
+                    </div>
+                    <button class="btn-secondary" style="font-size:12px; padding:6px 12px; border-color:rgba(251,191,36,0.4); color:#fbbf24;" onclick="openFeedbackDialog(${latest.id})">
+                        <i class="fas fa-star"></i> Rate & Review
+                    </button>
+                </div>
+            `;
             explText.style.display = "block";
             explText.innerHTML = `<strong>Architectural Rationale:</strong> ${latest.explanation || 'Custom design tailored to room layout and house styling.'}`;
 
@@ -496,6 +511,59 @@ async function loadActiveRoomStudio() {
         }
     } catch (e) {
         console.error("Failed to load room studio:", e);
+    }
+}
+
+function downloadDesignImage(url) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `decoraai_design_${Date.now()}.jpg`;
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+function shareDesignLink(designId, url) {
+    const shareUrl = url.startsWith("http") ? url : (window.location.origin + url);
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareUrl);
+        alert("✓ Design link copied to clipboard: " + shareUrl);
+    } else {
+        prompt("Copy this design URL:", shareUrl);
+    }
+}
+
+let activeFeedbackDesignId = null;
+
+function openFeedbackDialog(designId) {
+    activeFeedbackDesignId = designId || currentDesignId;
+    document.getElementById("feedback-dialog").classList.add("active");
+}
+
+function closeFeedbackDialog() {
+    document.getElementById("feedback-dialog").classList.remove("active");
+}
+
+async function submitDesignFeedback() {
+    if (!activeFeedbackDesignId) return;
+    const rating = parseInt(document.getElementById("feedback-rating").value) || 5;
+    const feedback_text = document.getElementById("feedback-text").value.trim();
+
+    try {
+        const res = await fetch(`/api/design/${activeFeedbackDesignId}/feedback`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ rating, feedback_text })
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+            alert("✓ Thank you! Your feedback & rating have been saved.");
+            closeFeedbackDialog();
+            document.getElementById("feedback-text").value = "";
+        }
+    } catch (e) {
+        console.error("Failed to submit feedback:", e);
     }
 }
 

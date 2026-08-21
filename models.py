@@ -385,6 +385,48 @@ class AsyncJob(Base):
             "updated_at": self.updated_at.isoformat() if self.updated_at else None
         }
 
+class DesignFeedback(Base):
+    __tablename__ = "design_feedbacks"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    design_id = Column(Integer, ForeignKey("designs.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    rating = Column(Integer, default=5)
+    feedback_text = Column(Text, default="")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "design_id": self.design_id,
+            "user_id": self.user_id,
+            "rating": self.rating,
+            "feedback_text": self.feedback_text,
+            "created_at": self.created_at.isoformat() if self.created_at else None
+        }
+
+class DesignOrder(Base):
+    __tablename__ = "design_orders"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    house_id = Column(Integer, ForeignKey("house_projects.id"), nullable=True)
+    order_type = Column(String(100), default="Design Consultation") # Consultation, 3D Blueprint, Contractor Execution
+    status = Column(String(50), default="PENDING") # PENDING, CONFIRMED, COMPLETED
+    amount_inr = Column(Float, default=5000.0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "house_id": self.house_id,
+            "order_type": self.order_type,
+            "status": self.status,
+            "amount_inr": self.amount_inr,
+            "created_at": self.created_at.isoformat() if self.created_at else None
+        }
+
 def init_db():
     Base.metadata.create_all(bind=engine)
     from sqlalchemy import inspect, text

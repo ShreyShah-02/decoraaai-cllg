@@ -280,6 +280,9 @@
                     <button id="tab-data-btn" class="tab-btn active" onclick="switchView('data')">
                         <i class="fas fa-table-cells"></i> Data Explorer
                     </button>
+                    <button id="tab-analytics-btn" class="tab-btn" onclick="switchView('analytics'); loadAnalyticsData();">
+                        <i class="fas fa-chart-line"></i> Analytics & Reports
+                    </button>
                     <button id="tab-guide-btn" class="tab-btn" onclick="switchView('guide')">
                         <i class="fas fa-book-open"></i> DB Connection Guide
                     </button>
@@ -311,6 +314,32 @@
                                     <tr><td style="text-align:center; padding:40px; color:#64748b;">No table selected</td></tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: ANALYTICS & REPORTS -->
+                <div id="view-analytics" style="display:none;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px;">
+                        <div class="glass-card" style="text-align:center; padding:24px;">
+                            <div style="font-size:32px; font-weight:700; color:#818cf8;" id="stat-users">0</div>
+                            <div style="font-size:12px; color:#94a3b8; margin-top:6px;">Total Registered Users</div>
+                        </div>
+                        <div class="glass-card" style="text-align:center; padding:24px;">
+                            <div style="font-size:32px; font-weight:700; color:#38bdf8;" id="stat-projects">0</div>
+                            <div style="font-size:12px; color:#94a3b8; margin-top:6px;">House & Villa Projects</div>
+                        </div>
+                        <div class="glass-card" style="text-align:center; padding:24px;">
+                            <div style="font-size:32px; font-weight:700; color:#34d399;" id="stat-designs">0</div>
+                            <div style="font-size:12px; color:#94a3b8; margin-top:6px;">AI Designs Generated</div>
+                        </div>
+                        <div class="glass-card" style="text-align:center; padding:24px;">
+                            <div style="font-size:32px; font-weight:700; color:#fbbf24;" id="stat-rating">5.0 ⭐</div>
+                            <div style="font-size:12px; color:#94a3b8; margin-top:6px;">Average User Feedback</div>
+                        </div>
+                        <div class="glass-card" style="text-align:center; padding:24px;">
+                            <div style="font-size:32px; font-weight:700; color:#f472b6;" id="stat-value">₹0</div>
+                            <div style="font-size:12px; color:#94a3b8; margin-top:6px;">Total Estimated Project Value</div>
                         </div>
                     </div>
                 </div>
@@ -536,6 +565,23 @@
             a.href = url;
             a.download = `${currentTable}_export.json`;
             a.click();
+        }
+
+        async function loadAnalyticsData() {
+            try {
+                const res = await fetch("/api/admin/analytics");
+                const data = await res.json();
+                if (data.status === "success" && data.analytics) {
+                    const a = data.analytics;
+                    document.getElementById("stat-users").innerText = a.total_users;
+                    document.getElementById("stat-projects").innerText = a.total_projects;
+                    document.getElementById("stat-designs").innerText = a.total_designs;
+                    document.getElementById("stat-rating").innerText = `${a.average_rating} ⭐`;
+                    document.getElementById("stat-value").innerText = `₹${(a.total_project_value_inr || 0).toLocaleString('en-IN')}`;
+                }
+            } catch (e) {
+                console.error("Failed to load analytics:", e);
+            }
         }
 
         function escapeHtml(str) {
