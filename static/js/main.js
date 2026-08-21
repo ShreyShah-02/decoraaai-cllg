@@ -52,32 +52,9 @@ document.querySelectorAll(".feature-card, .gallery-card, .testimonial, .member, 
     observer.observe(el);
 });
 
-// Typing Effect Hero
-const words = [
-    "Minimalist Living Room",
-    "Luxury Penthouse",
-    "Scandinavian Kitchen",
-    "Modern Home Office",
-    "Japandi Bedroom"
-];
-
-let wordIndex = 0;
-let charIndex = 0;
+// Setup Prompt Box Enter Key
 const heroInput = document.querySelector(".prompt-box input");
-
-function typeText() {
-    if (!heroInput || document.activeElement === heroInput || heroInput.value.length > 0) return;
-    heroInput.placeholder = words[wordIndex].substring(0, charIndex++);
-    if (charIndex > words[wordIndex].length) {
-        setTimeout(() => {
-            charIndex = 0;
-            wordIndex = (wordIndex + 1) % words.length;
-        }, 1500);
-    }
-}
-
 if (heroInput) {
-    setInterval(typeText, 120);
     heroInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -85,16 +62,6 @@ if (heroInput) {
         }
     });
 }
-
-document.querySelectorAll(".tags span").forEach(tag => {
-    tag.style.cursor = "pointer";
-    tag.addEventListener("click", () => {
-        if (heroInput) {
-            heroInput.value = tag.innerText.trim();
-            heroInput.focus();
-        }
-    });
-});
 
 // Connect Primary CTA to Studio Modal
 document.querySelectorAll(".primary-btn").forEach(btn => {
@@ -522,13 +489,14 @@ function downloadDesignImage(url) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    showToast("HD Image download started!", "success");
 }
 
 function shareDesignLink(designId, url) {
     const shareUrl = url.startsWith("http") ? url : (window.location.origin + url);
     if (navigator.clipboard) {
         navigator.clipboard.writeText(shareUrl);
-        alert("✓ Design link copied to clipboard: " + shareUrl);
+        showToast("Design link copied to clipboard! 📋", "success");
     } else {
         prompt("Copy this design URL:", shareUrl);
     }
@@ -538,6 +506,7 @@ let activeFeedbackDesignId = null;
 
 function openFeedbackDialog(designId) {
     activeFeedbackDesignId = designId || currentDesignId;
+    setFeedbackRating(5);
     document.getElementById("feedback-dialog").classList.add("active");
 }
 
@@ -558,12 +527,13 @@ async function submitDesignFeedback() {
         });
         const data = await res.json();
         if (data.status === "success") {
-            alert("✓ Thank you! Your feedback & rating have been saved.");
+            showToast("Thank you! Your feedback & rating have been saved! ⭐", "success");
             closeFeedbackDialog();
             document.getElementById("feedback-text").value = "";
         }
     } catch (e) {
         console.error("Failed to submit feedback:", e);
+        showToast("Could not save feedback. Please try again.", "info");
     }
 }
 
@@ -1044,7 +1014,167 @@ async function handleLogout() {
     }
 }
 
-// Check auth on load
+// Toast Notification Helper
+function showToast(message, type = "success") {
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast-message ${type}`;
+    const icon = type === "success" ? "fa-circle-check" : "fa-circle-info";
+    const iconColor = type === "success" ? "#10b981" : "#38bdf8";
+
+    toast.innerHTML = `
+        <i class="fas ${icon}" style="color:${iconColor}; font-size:16px;"></i>
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateX(40px)";
+        setTimeout(() => toast.remove(), 350);
+    }, 3200);
+}
+
+// Interactive Prompt Selector
+function selectHeroPrompt(promptText) {
+    const input = document.getElementById("hero-prompt-input");
+    if (!input) return;
+    input.value = promptText;
+    input.focus();
+    showToast("Prompt selected! Click ⚡ Generate to visualize.", "info");
+}
+
+// Before / After Slider Interaction
+function initBeforeAfterSlider() {
+    const slider = document.getElementById("beforeAfterSlider");
+    const afterWrapper = document.getElementById("afterImageWrapper");
+    const handle = document.getElementById("sliderHandle");
+
+    if (!slider || !afterWrapper || !handle) return;
+
+    let isDragging = false;
+
+    function moveSlider(clientX) {
+        const rect = slider.getBoundingClientRect();
+        let x = clientX - rect.left;
+        if (x < 0) x = 0;
+        if (x > rect.width) x = rect.width;
+
+        const percentage = (x / rect.width) * 100;
+        afterWrapper.style.width = `${percentage}%`;
+        handle.style.left = `${percentage}%`;
+    }
+
+    slider.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        moveSlider(e.clientX);
+    });
+
+    window.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        moveSlider(e.clientX);
+    });
+
+    window.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+
+    slider.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        if (e.touches[0]) moveSlider(e.touches[0].clientX);
+    });
+
+    window.addEventListener("touchmove", (e) => {
+        if (!isDragging || !e.touches[0]) return;
+        moveSlider(e.touches[0].clientX);
+    });
+
+    window.addEventListener("touchend", () => {
+        isDragging = false;
+    });
+}
+
+// Interactive Star Rating Widget
+function setFeedbackRating(value) {
+    const hiddenInput = document.getElementById("feedback-rating");
+    const label = document.getElementById("rating-label-text");
+    const stars = document.querySelectorAll("#interactiveStarRating .star-item");
+
+    if (hiddenInput) hiddenInput.value = value;
+
+    const ratingDescriptions = {
+        1: "⭐ Needs Improvement (1/5)",
+        2: "⭐⭐ Fair Quality (2/5)",
+        3: "⭐⭐⭐ Good Concept (3/5)",
+        4: "⭐⭐⭐⭐ Great Design (4/5)",
+        5: "⭐⭐⭐⭐⭐ Exceptional (5/5)"
+    };
+
+    if (label) label.innerText = ratingDescriptions[value] || `${value} Stars`;
+
+    stars.forEach(star => {
+        const starVal = parseInt(star.getAttribute("data-value"));
+        if (starVal <= value) {
+            star.classList.add("active");
+        } else {
+            star.classList.remove("active");
+        }
+    });
+}
+
+// Animated Rolling Stats & About Metrics Counter
+function initStatsCounterAnimation() {
+    const counterSections = document.querySelectorAll("#stats-section, #about-metrics");
+    if (!counterSections || counterSections.length === 0) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const section = entry.target;
+                const counterElements = section.querySelectorAll(".stat-number, .about-number[data-target]");
+
+                counterElements.forEach(el => {
+                    const target = parseFloat(el.getAttribute("data-target")) || 0;
+                    const suffix = el.getAttribute("data-suffix") || "";
+                    const decimals = parseInt(el.getAttribute("data-decimals")) || 0;
+                    const duration = 2000;
+                    const startTime = performance.now();
+
+                    function updateNumber(currentTime) {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const easeOut = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                        const current = target * easeOut;
+
+                        if (decimals > 0) {
+                            el.innerText = current.toFixed(decimals) + suffix;
+                        } else {
+                            el.innerText = Math.round(current) + suffix;
+                        }
+
+                        if (progress < 1) {
+                            requestAnimationFrame(updateNumber);
+                        } else {
+                            el.innerText = (decimals > 0 ? target.toFixed(decimals) : target) + suffix;
+                        }
+                    }
+                    requestAnimationFrame(updateNumber);
+                });
+
+                observer.unobserve(section);
+            }
+        });
+    }, { threshold: 0.25 });
+
+    counterSections.forEach(sec => observer.observe(sec));
+}
+
+// Check auth and init interactive widgets on load
 document.addEventListener("DOMContentLoaded", () => {
     checkAuthStatus();
+    initBeforeAfterSlider();
+    initStatsCounterAnimation();
 });
